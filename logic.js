@@ -10,9 +10,8 @@ d3.json(queryUrl, function(data) {
 
 // 3.0 Get the colors
 function getColor(m) {
-  return m > 8.5  ? 'OrangeRed' :
-    m > 7.5  ? 'Orange' :
-    m > 6.5  ? 'GoldenRod' :
+  return m > 7.5  ? 'Red' :
+    m > 6.5  ? 'DeepPink' :
     m > 5.5  ? 'Gold' :
     m > 4.5  ? 'Yellow' :
     '#FFEDA0';
@@ -30,7 +29,7 @@ function style(feature) {
 
 // 5.0 Function to assign the marker size according to earthquake magnitude
 function assignRadius(value) {
-  return value * 50000;
+  return value * 30000;
 }
 
 // 6.0 CREATE FEATURES FUNCTION
@@ -73,10 +72,10 @@ function createFeatures(earthquakeData) {
 function createMap(earthquakes) {
 
   // 7.1 Define streetmap and darkmap layers
-  var streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+  var lightmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
     maxZoom: 18,
-    id: "mapbox.streets",
+    id: "mapbox.light",
     accessToken: API_KEY
   });
 
@@ -89,7 +88,7 @@ function createMap(earthquakes) {
 
   // 7.2 Define a baseMaps object to hold our base layers
   var baseMaps = {
-    "Street Map": streetmap,
+    "Light Map": lightmap,
     "Dark Map": darkmap
   };
 
@@ -104,7 +103,7 @@ function createMap(earthquakes) {
       37.09, -95.71
     ],
     zoom: 2,
-    layers: [streetmap, earthquakes]
+    layers: [lightmap, earthquakes]
   });
 
   // 7.5 Create a layer control
@@ -119,7 +118,7 @@ function createMap(earthquakes) {
   var legend = L.control({ position: "bottomright" });
   legend.onAdd = function(map) {
     var div = L.DomUtil.create("div", "info legend");
-    var grades = [4.5,5.5,6.5,7.5,8.5]
+    var grades = [4.5,5.5,6.5,7.5]
     var labels = [];
 
     // div.innerHTML = legendInfo;

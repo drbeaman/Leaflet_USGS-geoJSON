@@ -1,2 +1,3 @@
 // API key
-const API_KEY = "pk.eyJ1IjoiZHJiZWFtYW4iLCJhIjoiY2pxdHV5aTYyMGR1dzQzbG4xaDJyaHZqaiJ9.tgs0xGtLqSGSd2pwpeP0pQ";
+// Register for your own free API key at www.mapbox.com and paste it between the "" here.
+const API_KEY = "";
