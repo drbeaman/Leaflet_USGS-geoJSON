@@ -1,93 +1,50 @@
-// Store our API endpoint inside queryUrl
+// 1.0 Store our API endpoint inside queryUrl
 var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/" +
   "4.5_month.geojson";
 
-// Function that will determine the color of an earthquake based on the magnitude
-// function chooseColor(mag) {
-//   switch (mag) {
-//   case when <= 5.0 :
-//     return "yellow";
-//   case when <= 5.5:
-//     return "orange";
-//   case when <= 6.0:
-//     return "red";
-//   case when <=6.5:
-//     return "green";
-//   case "Staten Island":
-//     return "purple";
-//   default:
-//     return "black";
-//   }
-// }
-
-  // Perform a GET request to the query URL
+// 2.0 Perform a GET request to the query URL
 d3.json(queryUrl, function(data) {
   // Once we get a response, send the data.features object to the createFeatures function
   createFeatures(data.features);
 });
 
-// Function to assign each earthquake according to color bucket
-// function assignColor(magnitude) {
-//   if (magnitude > 8.0) {
-//     return 'RedBrick'
-//   }
-//   else if (magnitude >= 6.5) {
-//     return 'Red'
-//   }
-//   else if (magnitude >= 6.0) {
-//     return 'Green'
-//   }
-//   else if (magnitude >= 5.5) {
-//     return 'LimeGreen'
-//   } 
-//   else if (magnitude >= 5.0) {
-//     return 'LawnGreen'
-//   }
-//   else if (magnitude > 4.5) {
-//     return 'GreenYellow'
-//   }
-//   else {
-//     return 'Chartreuse';
-//   }
-// };
-
-
-// Function to assign the marker size according to earthquake magnitude
-function assignRadius(value) {
-  return value * 20000;
+// 3.0 Get the colors
+function getColor(m) {
+  return m > 8.5  ? 'OrangeRed' :
+    m > 7.5  ? 'Orange' :
+    m > 6.5  ? 'GoldenRod' :
+    m > 5.5  ? 'Gold' :
+    m > 4.5  ? 'Yellow' :
+    '#FFEDA0';
 }
 
+// 4.0 Put the colors into style function
+function style(feature) {
+  return {
+      fillColor: getColor(feature.properties.mag),
+      weight: 3,
+      opacity: .8,
+      fillOpacity: 0.7
+  };
+}
+
+// 5.0 Function to assign the marker size according to earthquake magnitude
+function assignRadius(value) {
+  return value * 50000;
+}
+
+// 6.0 CREATE FEATURES FUNCTION
 function createFeatures(earthquakeData) {
 
-  // Define a function we want to run once for each feature in the features array
+  // 6.1 Define a function we want to run once for each feature in the features array
   // Give each feature a popup describing the place and time of the earthquake
   function onEachFeature(feature, layer) {
     layer.bindPopup("<h3>" + feature.properties.mag + " Magnitude Earthquake</h3><hr>" +
     feature.properties.place + "</h3><hr><p>" + 
     new Date(feature.properties.time) + "</p>");
   }
-  function getColor(m) {
-    return m > 8.0 ? '#800026' :
-      m > 7.5  ? '#BD0026' :
-      m > 7.0  ? '#E31A1C' :
-      m > 6.5  ? '#FC4E2A' :
-      m > 6.0   ? '#FD8D3C' :
-      m > 5.5   ? '#FEB24C' :
-      m > 5.0   ? '#FED976' :
-      '#FFEDA0';
-  }
   
-  function style(feature) {
-    return {
-        fillColor: getColor(feature.properties.mag),
-        weight: 2,
-        opacity: 1,
-        color: 'white',
-        dashArray: '3',
-        fillOpacity: 0.7
-    };
-  }
-  // Define the pointToLayer for the SIZE and COLOR variables which are not using
+  // 6.2 Define the pointToLayer for the SIZE and COLOR variables which are not using
   // Leaflet defaults; required for non-defaults in Leaflet layers.
   function pointToLayer(feature, latlng) {
     return new L.circle(latlng, {
@@ -98,24 +55,24 @@ function createFeatures(earthquakeData) {
       stroke: true,
       fillOpacity: .75
     })
-    
   }
 
-  // Create a GeoJSON layer containing the features and pointToLayers arrays on the earthquakeData object
+  // 6.3 Create a GeoJSON layer containing the features and pointToLayers arrays on the earthquakeData object
   // Run the onEachFeature function once for each piece of data in the array
   var earthquakes = L.geoJSON(earthquakeData, {
     style: style,
     onEachFeature: onEachFeature,
-    // pointToLayer: pointToLayer
+    pointToLayer: pointToLayer
   });
 
-  // Sending our earthquakes layer to the createMap function
+  // 6.4 Sending our earthquakes layer to the createMap function
   createMap(earthquakes);
 }
 
+// 7.0 CREATE MAP FUNCTION
 function createMap(earthquakes) {
 
-  // Define streetmap and darkmap layers
+  // 7.1 Define streetmap and darkmap layers
   var streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
     maxZoom: 18,
@@ -130,18 +87,18 @@ function createMap(earthquakes) {
     accessToken: API_KEY
   });
 
-  // Define a baseMaps object to hold our base layers
+  // 7.2 Define a baseMaps object to hold our base layers
   var baseMaps = {
     "Street Map": streetmap,
     "Dark Map": darkmap
   };
 
-  // Create overlay object to hold our overlay layer
+  // 7.3 Create overlay object to hold our overlay layer
   var overlayMaps = {
     Earthquakes: earthquakes
   };
 
-  // Create our map, giving it the streetmap and earthquakes layers to display on load
+  // 7.4 Create our map, giving it the streetmap and earthquakes layers to display on load
   var myMap = L.map("map", {
     center: [
       37.09, -95.71
@@ -150,7 +107,7 @@ function createMap(earthquakes) {
     layers: [streetmap, earthquakes]
   });
 
-  // Create a layer control
+  // 7.5 Create a layer control
   // Pass in our baseMaps and overlayMaps
   // Add the layer control to the map
   L.control.layers(baseMaps, overlayMaps, {
@@ -158,11 +115,11 @@ function createMap(earthquakes) {
   }).addTo(myMap);
 
 
-  // Set up the legend
+  // 7.6 Set up the legend
   var legend = L.control({ position: "bottomright" });
   legend.onAdd = function(map) {
     var div = L.DomUtil.create("div", "info legend");
-    var grades = [0,1,2,3,4,5,6]
+    var grades = [4.5,5.5,6.5,7.5,8.5]
     var labels = [];
 
     // div.innerHTML = legendInfo;
@@ -175,7 +132,7 @@ function createMap(earthquakes) {
     return div;
   };
 
-  // Adding legend to the map
+  // 7.7 Adding legend to the map
   legend.addTo(myMap);``
 
 }
